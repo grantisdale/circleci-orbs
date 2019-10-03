@@ -1,14 +1,18 @@
 version: 2.1
-description: Configure read tokens for packagecloud npm, maven and pypi repositories, to then use them inside CircleCI jobs
+description: | 
+  Configure read tokens for packagecloud npm, maven (using gradle) and pypi repositories. This will allow CircleCI jobs to get dependencies from packagecloud. 
+  This orb works for npm, maven and pypi packagecloud repositories. To configure npm and pypi repositories you need to set the packagecloud master token; for maven repoistories you will need your packagecloud accounts API token.
+  Source: https://github.com/grantisdale/circleci-orbs
 commands:
   configure:
+  #description:
     parameters:
       repotype:
         description: The type of packagecloud repository to configure
         type: enum
         enum:
           - npm
-          - maven
+          - maven-gradle
           - pypi
       username:
         type: string
@@ -20,47 +24,60 @@ commands:
         type: string
       packagecloudtoken:
         description: Packagecloud API token
+        default: ""
         type: string
-steps:
-  - when:
-    condition: << parameters.repotype >> == "npm"
     steps:
-      - run:
-          name:  Create maven read tokens and set up gradle
-          command: |
-            if [[ "<< parameters.mastertoken >>" ]]; then
-              curl -s https://<< parameters.mastertoken >>:@packagecloud.io/install/repositories/<< parameters.username >>/<< parameters.reponame >>/script.node.sh | bash
-            else
-              echo "Set packagecloud npm master token argument" 
-  - when:
-    condition: << parameters.repotype >> == "maven"
-    steps:
-      - run:
-          name:  Create maven read tokens and set up gradle
-          command: |
-            if [[ "<< parameters.packagecloudtoken >>" ]]; then
-              UNIQUE_ID="`hostname -f`-<< parameters.reponame >>"
-              TOKEN_URL=https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/<< parameters.reponame >>/master_tokens/<< parameters.repo_token >>/read_tokens.json
-              curl -s -f -X POST -F "read_token[name]=${UNIQUE_ID}" $TOKEN_URL >/tmp/token.json
-              awk '{gsub("[{\"}]+", ""); gsub(",", "\n"); print $0}' /tmp/token.json > ~/token.params
-              mkdir -p ~/.gradle
-              echo "mavenPassword=<< parameters.packagecloudtoken >>" >> ~/.gradle/gradle.properties
-              echo "<< parameters.property_name >>=`sed -n 's/value://p' ~/token.params`" >> ~/.gradle/gradle.properties
-              echo "<< parameters.reponame >> << parameters.repo_token >> `sed -n 's/id://p' ~/token.params`" >> ~/revoke.list
-              cp ~/.gradle/gradle.properties .
-            else
-              echo "Set packagecloud API token argument"
-  - when:
-    condition: << parameters.repotype >> == "pypi"
-    steps:
-      - run:
-          name: Create pypi read token
-          command: |
-            if [[ "<< parameters.mastertoken >>" ]]; then
-              UNIQUE_ID=`hostname -f`
-              export READ_TOKEN=`curl -XPOST --data "name=${UNIQUE_ID}" https://<< parameters.mastertoken >>@packagecloud.io/install/repositories/<< parameters.username >>/<< parameters.reponame >>/tokens.text`
-              echo "export READ_TOKEN=${READ_TOKEN}" >> $BASH_ENV
-            else
-              echo "Set packagecloud pypi master token argument"
-            fi             
+      - when:
+        condition: << parameters.repotype >> == "npm"
+        steps:
+          - run:
+              name:  Create npm read token
+              command: |
+                if [[ "<< parameters.mastertoken >>" ]]; then
+                  curl -s https://<< parameters.mastertoken >>:@packagecloud.io/install/repositories/<< parameters.username >>/<< parameters.reponame >>/script.node.sh | bash
+                else
+                  echo "Set packagecloud npm master token argument" 
+      - when:
+        condition: << parameters.repotype >> == "maven-gradle"
+        steps:
+          - run:
+              name:  Create maven release and snapshot read tokens and set up gradle
+              command: |
+                if [[ "<< parameters.packagecloudtoken >>" ]]; then
+                  UNIQUE_ID="`hostname -f`-<< parameters.reponame >>"
+                  TOKEN_URL=https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/<< parameters.reponame >>/master_tokens/<< parameters.repo_token >>/read_tokens.json
+                  curl -s -f -X POST -F "read_token[name]=${UNIQUE_ID}" $TOKEN_URL >/tmp/token.json
+                  awk '{gsub("[{\"}]+", ""); gsub(",", "\n"); print $0}' /tmp/token.json > ~/token.params
+                  mkdir -p ~/.gradle
+                  echo "mavenPassword=<< parameters.packagecloudtoken >>" >> ~/.gradle/gradle.properties
+                  echo "<< parameters.property_name >>=`sed -n 's/value://p' ~/token.params`" >> ~/.gradle/gradle.properties
+                  echo "<< parameters.reponame >> << parameters.repo_token >> `sed -n 's/id://p' ~/token.params`" >> ~/revoke.list
+                  cp ~/.gradle/gradle.properties .
+                else
+                  echo "Set packagecloud API token argument"
+      - when:
+        condition: << parameters.repotype >> == "pypi"
+        steps:
+          - run:
+              name: Create pypi read token
+              command: |
+                if [[ "<< parameters.mastertoken >>" ]]; then
+                  UNIQUE_ID=`hostname -f`
+                  export READ_TOKEN=`curl -XPOST --data "name=${UNIQUE_ID}" https://<< parameters.mastertoken >>@packagecloud.io/install/repositories/<< parameters.username >>/<< parameters.reponame >>/tokens.text`
+                  echo "export READ_TOKEN=${READ_TOKEN}" >> $BASH_ENV
+                else
+                  echo "Set packagecloud pypi master token argument"
+                fi             
                      
+
+
+
+#  revoke:
+#    parameters:
+#      repotype:
+#        description: The type of packagecloud repository to configure
+#        type: enum
+#        enum:
+#          - npm
+#          - maven-gradle
+#          - pypi
