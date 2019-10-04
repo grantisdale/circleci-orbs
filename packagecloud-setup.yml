@@ -1,7 +1,7 @@
 version: 2.1
 description: | 
   Configure and revoke read tokens for packagecloud npm, maven (using gradle) and pypi repositories.This will allow CircleCI 
-  sjobs to get dependencies from packagecloud. 
+  jobs to get dependencies from packagecloud. 
   This orb works for npm, maven and pypi packagecloud repositories. To configure npm and pypi repositories you need to set 
   the packagecloud master token; for maven repoistories you will need your packagecloud accounts API token.
   Source: https://github.com/grantisdale/circleci-orbs
@@ -30,49 +30,49 @@ commands:
         type: string
     steps:
       - when:
-        condition: << parameters.repotype >> == "npm"
-        steps:
-          - run:
-              name:  Create npm read token
-              command: |
-                if [[ "<< parameters.mastertoken >>" ]]; then
-                  curl -s https://<< parameters.mastertoken >>:@packagecloud.io/install/repositories/<< parameters.username >>/<< parameters.reponame >>/script.node.sh | bash
-                else
-                  echo "Set packagecloud npm master token argument" 
-              when: always   
+          condition: << parameters.repotype >> == "npm"
+          steps:
+            - run:
+                name:  Create npm read token
+                command: |
+                  if [[ "<< parameters.mastertoken >>" ]]; then
+                    curl -s https://<< parameters.mastertoken >>:@packagecloud.io/install/repositories/<< parameters.username >>/<< parameters.reponame >>/script.node.sh | bash
+                  else
+                    echo "Set packagecloud npm master token argument" 
+                when: always   
       - when:
-        condition: << parameters.repotype >> == "maven-gradle"
-        steps:
-          - run:
-              name:  Create maven release and snapshot read tokens and set up gradle
-              command: |
-                if [[ "<< parameters.packagecloudtoken >>" ]]; then
-                  UNIQUE_ID="`hostname -f`-<< parameters.reponame >>"
-                  TOKEN_URL=https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/<< parameters.reponame >>/master_tokens/<< parameters.repo_token >>/read_tokens.json
-                  curl -s -f -X POST -F "read_token[name]=${UNIQUE_ID}" $TOKEN_URL >/tmp/token.json
-                  awk '{gsub("[{\"}]+", ""); gsub(",", "\n"); print $0}' /tmp/token.json > ~/token.params
-                  mkdir -p ~/.gradle
-                  echo "mavenPassword=<< parameters.packagecloudtoken >>" >> ~/.gradle/gradle.properties
-                  echo "<< parameters.property_name >>=`sed -n 's/value://p' ~/token.params`" >> ~/.gradle/gradle.properties
-                  echo "<< parameters.reponame >> << parameters.repo_token >> `sed -n 's/id://p' ~/token.params`" >> ~/revoke.list
-                  cp ~/.gradle/gradle.properties .
-                else
-                  echo "Set packagecloud API token argument"
-              when: always     
+          condition: << parameters.repotype >> == "maven-gradle"
+          steps:
+            - run:
+                name:  Create maven release and snapshot read tokens and set up gradle
+                command: |
+                  if [[ "<< parameters.packagecloudtoken >>" ]]; then
+                    UNIQUE_ID="`hostname -f`-<< parameters.reponame >>"
+                    TOKEN_URL=https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/<< parameters.reponame >>/master_tokens/<< parameters.mastertoken >>/read_tokens.json
+                    curl -s -f -X POST -F "read_token[name]=${UNIQUE_ID}" $TOKEN_URL >/tmp/token.json
+                    awk '{gsub("[{\"}]+", ""); gsub(",", "\n"); print $0}' /tmp/token.json > ~/token.params
+                    mkdir -p ~/.gradle
+                    echo "mavenPassword=<< parameters.packagecloudtoken >>" >> ~/.gradle/gradle.properties
+                    echo "<< parameters.property_name >>=`sed -n 's/value://p' ~/token.params`" >> ~/.gradle/gradle.properties
+                    echo "<< parameters.reponame >> << parameters.mastertoken >> `sed -n 's/id://p' ~/token.params`" >> ~/revoke.list
+                    cp ~/.gradle/gradle.properties .
+                  else
+                    echo "Set packagecloud API token argument"
+                when: always     
       - when:
-        condition: << parameters.repotype >> == "pypi"
-        steps:
-          - run:
-              name: Create pypi read token
-              command: |
-                if [[ "<< parameters.mastertoken >>" ]]; then
-                  UNIQUE_ID=`hostname -f`
-                  export READ_TOKEN=`curl -XPOST --data "name=${UNIQUE_ID}" https://<< parameters.mastertoken >>@packagecloud.io/install/repositories/<< parameters.username >>/<< parameters.reponame >>/tokens.text`
-                  echo "export READ_TOKEN=${READ_TOKEN}" >> $BASH_ENV
-                else
-                  echo "Set packagecloud pypi master token argument"
-                fi
-              when: always   
+          condition: << parameters.repotype >> == "pypi"
+          steps:
+            - run:
+                name: Create pypi read token
+                command: |
+                  if [[ "<< parameters.mastertoken >>" ]]; then
+                    UNIQUE_ID=`hostname -f`
+                    export READ_TOKEN=`curl -XPOST --data "name=${UNIQUE_ID}" https://<< parameters.mastertoken >>@packagecloud.io/install/repositories/<< parameters.username >>/<< parameters.reponame >>/tokens.text`
+                    echo "export READ_TOKEN=${READ_TOKEN}" >> $BASH_ENV
+                  else
+                    echo "Set packagecloud pypi master token argument"
+                  fi
+                when: always   
   revoke:
     description: |
       Revoke read token(s)
@@ -98,37 +98,37 @@ commands:
         type: string
     steps:
       - when:
-        condition: << parameters.repotype >> == "npm"
-        steps:
-          - run:
-              name: revokenpm read token
-              command: |
-                #sudo on circleci/node:10.16.2. How to get round?
-                gem install package_cloud
-                export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
-                package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
-        when: always
+          condition: << parameters.repotype >> == "npm"
+          steps:
+            - run:
+                name: revokenpm read token
+                command: |
+                  #sudo on circleci/node:10.16.2. How to get round?
+                  gem install package_cloud
+                  export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
+                  package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
+                when: always
       - when:
-        condition: << parameters.repotype >> == "maven-gradle"
-        steps:
-          - run:
-              name: revoke maven-gradle read tokens
-              command: |
-                while read revoke_entry; do
-                  set $revoke_entry
-                  REPO=$1
-                  TOKEN=$2
-                  ID=$3
-                  curl -s -f -X DELETE https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/${REPO}/master_tokens/${TOKEN}/read_tokens/${ID}
-                done < ~/revoke.list
-              when: always
+          condition: << parameters.repotype >> == "maven-gradle"
+          steps:
+            - run:
+                name: revoke maven-gradle read tokens
+                command: |
+                  while read revoke_entry; do
+                    set $revoke_entry
+                    REPO=$1
+                    TOKEN=$2
+                    ID=$3
+                    curl -s -f -X DELETE https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/${REPO}/master_tokens/${TOKEN}/read_tokens/${ID}
+                  done < ~/revoke.list
+                when: always
       - when:
-        condition: << parameters.repotype >> == "pypi"
-        steps:
-          - run:
-              name: revoke pypi read token
-              command: |
-                gem install package_cloud
-                export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
-                package_cloud read_token destroy < parameters.username >>/<< parameters.reponame >> default/`hostname -f`
-        when: always      
+          condition: << parameters.repotype >> == "pypi"
+          steps:
+            - run:
+                name: revoke pypi read token
+                command: |
+                  gem install package_cloud
+                  export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
+                  package_cloud read_token destroy < parameters.username >>/<< parameters.reponame >> default/`hostname -f`
+                when: always
