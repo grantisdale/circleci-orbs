@@ -1,9 +1,6 @@
 version: 2.1
 description: | 
-  Configure and revoke read tokens for packagecloud npm, maven (using gradle) and pypi repositories.This will allow CircleCI 
-  jobs to get dependencies from packagecloud. 
-  This orb works for npm, maven and pypi packagecloud repositories. To configure npm and pypi repositories you need to set 
-  the packagecloud master token; for maven repoistories you will need your packagecloud accounts API token.
+  Configure and revoke read tokens for packagecloud npm, maven (using gradle) and pypi repositories.This will allow CircleCI jobs to get dependencies from packagecloud. This orb works for npm, maven and pypi packagecloud repositories. To configure npm and pypi repositories you need to set the packagecloud master token; for maven repoistories you will need your packagecloud accounts API token.
   Source: https://github.com/grantisdale/circleci-orbs
 commands:
   configure:
@@ -138,14 +135,14 @@ examples:
     usage:
       version: 2.1
       orbs:
-        grantisdale: grantisdale/packagecloud@x.y.z
+        packagecloud: grantisdale/packagecloud@x.y.z
       jobs:
         build:
           docker:
           - image: circleci/node:10.16.3
           steps:
             - checkout
-            - grantisdale/configure:
+            - packagecloud/configure:
                 npm-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-npm-reponame
@@ -163,7 +160,7 @@ examples:
                   $SUDO apt-get install ruby-full
                   $SUDO gem install rake
                   $SUDO gem install package_cloud
-            - grantisdale/revoke:
+            - packagecloud/revoke:
                 npm-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-npm-reponame
@@ -175,20 +172,20 @@ examples:
     usage:
       version: 2.1
       orbs:
-        grantisdale: grantisdale/packagecloud@x.y.z
+        packagecloud: grantisdale/packagecloud@x.y.z
       jobs:
         build:
           machine:
             image: ubuntu-1604:201903-01
           steps:
             - checkout
-            - grantisdale/configure:
+            - packagecloud/configure:
                 maven-gradle-repo: true
                 username: packagecloud-username
                 reponame: packgecloud-maven-releases-reponame
                 mastertoken: "$MY_MAVEN_RELEASES_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
-            - grantisdale/configure:
+            - packagecloud/configure:
                 maven-gradle-repo: true
                 username: packagecloud-username
                 reponame: packgecloud-maven-snapshots-reponame
@@ -198,7 +195,7 @@ examples:
                 name: Build
                 command: |
                   ./gradlew
-            - grantisdale/revoke:
+            - packagecloud/revoke:
                 maven-gradle-repo: true
                 username: packagecloud-username
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
@@ -208,14 +205,14 @@ examples:
     usage:
       version: 2.1
       orbs:
-        grantisdale: grantisdale/packagecloud@x.y.z
+        packagecloud: grantisdale/packagecloud@x.y.z
       jobs:
         build:
           machine:
             image: ubuntu-1604:201903-01
           steps:
             - checkout
-            - grantisdale/configure:
+            - packagecloud/configure:
                 pypi-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-pypi-reponame
@@ -229,7 +226,7 @@ examples:
                 name: Install packagecloud cli
                 command: |
                   gem install package_cloud
-            - grantisdale/revoke:
+            - packagecloud/revoke:
                 pypi-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-pypi-reponame
