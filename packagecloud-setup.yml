@@ -1,6 +1,5 @@
 version: 2.1
 description: | 
-  DO NOT USE - STILL IN DEV
   Configure and revoke read tokens for packagecloud npm, maven (using gradle) and pypi repositories.This will allow CircleCI 
   jobs to get dependencies from packagecloud. 
   This orb works for npm, maven and pypi packagecloud repositories. To configure npm and pypi repositories you need to set 
@@ -8,7 +7,7 @@ description: |
   Source: https://github.com/grantisdale/circleci-orbs
 commands:
   configure:
-    description: Configure read token
+    description: Configure packagecloud read token
     parameters:
       npm-repo:
         type: boolean
@@ -21,10 +20,12 @@ commands:
         default: false
       username:
         type: string
+        description: Packagecloud account username
       reponame: 
         type: string
+        description: Packagecloud repository name
       mastertoken:
-        description: The master token for your packagecloud pypi repository
+        description: The master token for your packagecloud repository
         type: string
       packagecloudtoken:
         description: Packagecloud API token
@@ -78,7 +79,7 @@ commands:
                   fi 
   revoke:
     description: |
-      Revoke read token(s)
+      Revoke read token(s) from packagecloud
     parameters:
       npm-repo:
         type: boolean
@@ -91,15 +92,13 @@ commands:
         default: false
       username:
         type: string
+        description: Packagecloud account username
       reponame: 
         type: string
-      mastertoken:
-        description: The master token for your packagecloud pypi repository
+        description: Packagecloud repository name
         default: ""
-        type: string    
       packagecloudtoken:
         description: Packagecloud API token
-        default: ""
         type: string
     steps:
       - when:
@@ -131,3 +130,72 @@ commands:
                 command: |
                   export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
                   package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
+
+examples:
+  use-packagecloud-npm-repository:
+    description: |
+      Create a read token and use with npm/yarn
+    usage:
+      jobs:
+        build:
+          docker:
+          - image: circleci/node:10.16.3
+          steps:
+            - checkout
+            - grantisdale/configure:
+                npm-repo: true
+                username: packagecloud-username
+                reponame: packagecloud-npm-reponame
+                mastertoken: "$MY-NPM-MASTER_TOKEN_VARIABLE"
+                packagecloudtoken: "$MY-PACKAGECLOUD_API_TOKEN_VARIABLE"
+            - run:
+                name: Install and test
+                command: |
+                  yarn install
+                  yarn test
+            - run:
+                name: Install packagecloud cli
+                command: |
+                  if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+                  $SUDO apt-get install ruby-full
+                  $SUDO gem install rake
+                  $SUDO gem install package_cloud
+            - grantisdale/revoke:
+                npm-repo: true
+                username: packagecloud-username
+                reponame: packagecloud-npm-reponame
+                mastertoken: "$MY_NPM_MASTER_TOKEN"
+                packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+  use-packagecloud-maven-repository:
+    description: |
+      Create a read token and use with maven repositories, using gradle as build automation
+    usage:
+      jobs:
+        build:
+          machine:
+            image: ubuntu-1604:201903-01
+          steps:
+            - checkout
+            - grantisdale/configure:
+                maven-gradle-repo: true
+                username: packagecloud-username
+                reponame: packgecloud-maven-releases-reponame
+                mastertoken: "$MY_MAVEN_RELEASES_MASTER_TOKEN"
+                packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+            - grantisdale/configure:
+                maven-gradle-repo: true
+                username: packagecloud-username
+                reponame: packgecloud-maven-snapshots-reponame
+                mastertoken: "$MY_MAVEN_SNAPSHOTS_MASTER_TOKEN"
+                packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+            - run:
+                name: Build
+                command: |
+                  ./gradlew
+            - grantisdale/revoke:
+                maven-gradle-repo: true
+                username: packagecloud-username
+                packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+
+          
+
