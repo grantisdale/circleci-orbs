@@ -1,6 +1,7 @@
 version: 2.1
 description: | 
-  Configure and revoke read tokens for packagecloud npm, maven (using gradle) and pypi repositories.This will allow CircleCI jobs to get dependencies from packagecloud. This orb works for npm, maven and pypi packagecloud repositories. To configure npm and pypi repositories you need to set the packagecloud master token; for maven repoistories you will need your packagecloud accounts API token.
+  Configure and revoke read tokens for packagecloud npm, maven (using gradle) and pypi repositories. This will allow CircleCI jobs to get dependencies from packagecloud. 
+  This orb works for npm, maven and pypi packagecloud repositories. To configure npm and pypi repositories you need to set the packagecloud master token; for maven repoistories you will need your packagecloud accounts API token.
   Source: https://github.com/grantisdale/circleci-orbs
 commands:
   configure:
