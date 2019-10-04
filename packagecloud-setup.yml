@@ -132,9 +132,9 @@ commands:
                   package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
 
 examples:
-  use-packagecloud-npm-repository:
+  packagecloud-npm-repository:
     description: |
-      Create a read token and use with npm/yarn
+      Create a npm packagecloud read token, use with npm/yarn then remove token from packagecloud
     usage:
       jobs:
         build:
@@ -146,8 +146,8 @@ examples:
                 npm-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-npm-reponame
-                mastertoken: "$MY-NPM-MASTER_TOKEN_VARIABLE"
-                packagecloudtoken: "$MY-PACKAGECLOUD_API_TOKEN_VARIABLE"
+                mastertoken: "$MY-NPM-MASTER_TOKEN"
+                packagecloudtoken: "$MY-PACKAGECLOUD_API_TOKEN"
             - run:
                 name: Install and test
                 command: |
@@ -164,11 +164,11 @@ examples:
                 npm-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-npm-reponame
-                mastertoken: "$MY_NPM_MASTER_TOKEN"
+                mastertoken: "$MY_NPM_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
-  use-packagecloud-maven-repository:
+  packagecloud-maven-repository:
     description: |
-      Create a read token and use with maven repositories, using gradle as build automation
+      Create a maven packagecloud read token, use with maven repositories (using gradle as build automation) and then remove token(s) from packagecloud
     usage:
       jobs:
         build:
@@ -180,13 +180,13 @@ examples:
                 maven-gradle-repo: true
                 username: packagecloud-username
                 reponame: packgecloud-maven-releases-reponame
-                mastertoken: "$MY_MAVEN_RELEASES_MASTER_TOKEN"
+                mastertoken: "$MY_MAVEN_RELEASES_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
             - grantisdale/configure:
                 maven-gradle-repo: true
                 username: packagecloud-username
                 reponame: packgecloud-maven-snapshots-reponame
-                mastertoken: "$MY_MAVEN_SNAPSHOTS_MASTER_TOKEN"
+                mastertoken: "$MY_MAVEN_SNAPSHOTS_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
             - run:
                 name: Build
@@ -196,6 +196,36 @@ examples:
                 maven-gradle-repo: true
                 username: packagecloud-username
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+    packagecloud-pypi-repository:
+      description: |
+        Create a pypi packagecloud read token, use with pip then remove token from packagecloud
+      usage:
+        jobs:
+          build:
+            machine:
+              image: ubuntu-1604:201903-01
+            steps:
+              - checkout
+              - grantisdale/configure:
+                  pypi-repo: true
+                  username: packagecloud-username
+                  reponame: packagecloud-pypi-reponame
+                  mastertoken: "$MY_PYPI_REPO_MASTER_TOKEN"
+                  packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+              - run:
+                  name: Install dependencies
+                  command: |
+                    pip3 install -U -r requirements.txt --extra-index-url=https://${READ_TOKEN}:@packagecloud.io/packagecloud-username/packagecloud-pypi-reponame/pypi/simple
+              - run:
+                  name: Install packagecloud cli
+                  command: |
+                    gem install package_cloud
+              - grantisdale/revoke:
+                  pypi-repo: true
+                  username: packagecloud-username
+                  reponame: packagecloud-pypi-reponame
+                  mastertoken: "$MY_PYPI_REPO_MASTER_TOKEN"
+                  packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"            
 
           
 
