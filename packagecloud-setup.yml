@@ -53,7 +53,7 @@ commands:
                     awk '{gsub("[{\"}]+", ""); gsub(",", "\n"); print $0}' /tmp/token.json > ~/token.params
                     mkdir -p ~/.gradle
                     echo "mavenPassword=<< parameters.packagecloudtoken >>" >> ~/.gradle/gradle.properties
-                    echo "<< parameters.property_name >>=`sed -n 's/value://p' ~/token.params`" >> ~/.gradle/gradle.properties
+                    echo "<< parameters.reponame >>.readtoken=`sed -n 's/value://p' ~/token.params`" >> ~/.gradle/gradle.properties
                     echo "<< parameters.reponame >> << parameters.mastertoken >> `sed -n 's/id://p' ~/token.params`" >> ~/revoke.list
                     cp ~/.gradle/gradle.properties .
                   else
