@@ -79,7 +79,7 @@ commands:
                   fi 
   revoke:
     description: |
-      Revoke read token(s) from packagecloud
+      Revoke read token(s) from packagecloud. For revocation of npm
     parameters:
       npm-repo:
         type: boolean
@@ -136,6 +136,9 @@ examples:
     description: |
       Create a npm packagecloud read token, use with npm/yarn then remove token from packagecloud
     usage:
+      version: 2.1
+      orbs:
+        grantisdale: grantisdale/packagecloud@x.y.z
       jobs:
         build:
           docker:
@@ -170,6 +173,9 @@ examples:
     description: |
       Create a maven packagecloud read token, use with maven repositories (using gradle as build automation) and then remove token(s) from packagecloud
     usage:
+      version: 2.1
+      orbs:
+        grantisdale: grantisdale/packagecloud@x.y.z
       jobs:
         build:
           machine:
@@ -196,36 +202,39 @@ examples:
                 maven-gradle-repo: true
                 username: packagecloud-username
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
-    packagecloud-pypi-repository:
-      description: |
-        Create a pypi packagecloud read token, use with pip then remove token from packagecloud
-      usage:
-        jobs:
-          build:
-            machine:
-              image: ubuntu-1604:201903-01
-            steps:
-              - checkout
-              - grantisdale/configure:
-                  pypi-repo: true
-                  username: packagecloud-username
-                  reponame: packagecloud-pypi-reponame
-                  mastertoken: "$MY_PYPI_REPO_MASTER_TOKEN"
-                  packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
-              - run:
-                  name: Install dependencies
-                  command: |
-                    pip3 install -U -r requirements.txt --extra-index-url=https://${READ_TOKEN}:@packagecloud.io/packagecloud-username/packagecloud-pypi-reponame/pypi/simple
-              - run:
-                  name: Install packagecloud cli
-                  command: |
-                    gem install package_cloud
-              - grantisdale/revoke:
-                  pypi-repo: true
-                  username: packagecloud-username
-                  reponame: packagecloud-pypi-reponame
-                  mastertoken: "$MY_PYPI_REPO_MASTER_TOKEN"
-                  packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"            
+  packagecloud-pypi-repository:
+    description: |
+      Create a pypi packagecloud read token, use with pip then remove token from packagecloud
+    usage:
+      version: 2.1
+      orbs:
+        grantisdale: grantisdale/packagecloud@x.y.z
+      jobs:
+        build:
+          machine:
+            image: ubuntu-1604:201903-01
+          steps:
+            - checkout
+            - grantisdale/configure:
+                pypi-repo: true
+                username: packagecloud-username
+                reponame: packagecloud-pypi-reponame
+                mastertoken: "$MY_PYPI_REPO_MASTER_TOKEN"
+                packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+            - run:
+                name: Install dependencies
+                command: |
+                  pip3 install -U -r requirements.txt --extra-index-url=https://${READ_TOKEN}:@packagecloud.io/packagecloud-username/packagecloud-pypi-reponame/pypi/simple
+            - run:
+                name: Install packagecloud cli
+                command: |
+                  gem install package_cloud
+            - grantisdale/revoke:
+                pypi-repo: true
+                username: packagecloud-username
+                reponame: packagecloud-pypi-reponame
+                mastertoken: "$MY_PYPI_REPO_MASTER_TOKEN"
+                packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"            
 
           
 
