@@ -44,7 +44,7 @@ commands:
           condition: << parameters.maven-gradle-repo >>
           steps:
             - run:
-                name:  Create maven release and snapshot read tokens and set up gradle
+                name:  Create maven read token and set up gradle
                 command: |
                   if [[ "<< parameters.packagecloudtoken >>" ]]; then
                     UNIQUE_ID="`hostname -f`-<< parameters.reponame >>"
@@ -110,7 +110,7 @@ commands:
           condition: << parameters.maven-gradle-repo >>
           steps:
             - run:
-                name: Revoke maven-gradle read tokens
+                name: Revoke maven read token(s)
                 command: |
                   while read revoke_entry; do
                     set $revoke_entry
@@ -164,7 +164,6 @@ examples:
                 npm-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-npm-reponame
-                mastertoken: "$MY_NPM_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
   packagecloud-maven-repository:
     description: |
@@ -230,7 +229,6 @@ examples:
                 pypi-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-pypi-reponame
-                mastertoken: "$MY_PYPI_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"            
 
           
