@@ -61,7 +61,7 @@ commands:
                     echo "Set packagecloud API token argument"
                   fi  
       - when:
-          condition: << parameters.pypi-name >>
+          condition: << parameters.pypi-repo >>
           steps:
             - run:
                 name: Create pypi read token
@@ -77,7 +77,6 @@ commands:
     description: |
       Revoke read token(s)
     parameters:
-      parameters:
       npm-repo:
         type: boolean
         default: false
@@ -104,10 +103,15 @@ commands:
           condition: << parameters.npm-repo >>
           steps:
             - run:
-                name: revokenpm read token
+                name: revoke npm read token
                 command: |
-                  #sudo on circleci/node:10.16.2. How to get round?
-                  gem install package_cloud
+                  # Set sudo to work whether logged in as root user or non-root user
+                  if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+                  $SUDO rm -rf /var/lib/apt/lists/*
+
+                  $SUDO apt-get install ruby-full
+                  $SUDO gem install rake
+                  $SUDO gem install package_cloud
                   export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
                   package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
       - when:
@@ -124,7 +128,7 @@ commands:
                     curl -s -f -X DELETE https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/${REPO}/master_tokens/${TOKEN}/read_tokens/${ID}
                   done < ~/revoke.list
       - when:
-          condition: << parameters.pypi-name >>
+          condition: << parameters.pypi-repo >>
           steps:
             - run:
                 name: revoke pypi read token
