@@ -133,6 +133,12 @@ commands:
             - run:
                 name: revoke pypi read token
                 command: |
-                  gem install package_cloud
+                  # Set sudo to work whether logged in as root user or non-root user
+                  if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+                  $SUDO rm -rf /var/lib/apt/lists/*
+
+                  $SUDO apt-get install ruby-full
+                  $SUDO gem install rake
+                  $SUDO gem install package_cloud
                   export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
                   package_cloud read_token destroy < parameters.username >>/<< parameters.reponame >> default/`hostname -f`
