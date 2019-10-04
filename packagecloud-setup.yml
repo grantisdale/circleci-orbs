@@ -7,6 +7,16 @@ description: |
   the packagecloud master token; for maven repoistories you will need your packagecloud accounts API token.
   Source: https://github.com/grantisdale/circleci-orbs
 commands:
+  install-gem-packagecloud-cli:
+    description: Installs ruby and the packagecloud-cli using apt-get
+    steps:
+      - run:
+          name: Install ruby and the packagecloud-cli
+          command: |
+            if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+            $SUDO apt-get install ruby-full
+            $SUDO gem install rake
+            $SUDO gem install package_cloud
   configure:
     description: Configure read token
     parameters:
@@ -103,22 +113,15 @@ commands:
           condition: << parameters.npm-repo >>
           steps:
             - run:
-                name: revoke npm read token
+                name: Revoke npm read token
                 command: |
-                  # Set sudo to work whether logged in as root user or non-root user
-                  if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
-                  $SUDO apt-get install ruby-full
-                  $SUDO rm -rf /var/lib/apt/lists/*
-                  $SUDO gem install rake
-                  $SUDO gem install package_cloud
-
                   export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
                   package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
       - when:
           condition: << parameters.maven-gradle-repo >>
           steps:
             - run:
-                name: revoke maven-gradle read tokens
+                name: Revoke maven-gradle read tokens
                 command: |
                   while read revoke_entry; do
                     set $revoke_entry
@@ -131,14 +134,7 @@ commands:
           condition: << parameters.pypi-repo >>
           steps:
             - run:
-                name: revoke pypi read token
+                name: Revoke pypi read token
                 command: |
-                  # Set sudo to work whether logged in as root user or non-root user
-                  if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
-                  $SUDO rm -rf /var/lib/apt/lists/*
-
-                  $SUDO apt-get install ruby-full
-                  $SUDO gem install rake
-                  $SUDO gem install package_cloud
                   export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
-                  package_cloud read_token destroy < parameters.username >>/<< parameters.reponame >> default/`hostname -f`
+                  package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
