@@ -10,13 +10,15 @@ commands:
   configure:
     description: Configure read token
     parameters:
-      repotype:
-        description: The type of packagecloud repository to configure
-        type: enum
-        enum:
-          - npm
-          - maven-gradle
-          - pypi
+      npm-repo:
+        type: boolean
+        default: false
+      maven-gradle-repo:
+        type: boolean
+        default: false
+      pypi-repo:
+        type: boolean
+        default: false
       username:
         type: string
       reponame: 
@@ -29,7 +31,7 @@ commands:
         type: string
     steps:
       - when:
-          condition: << parameters.repotype >> == "npm"
+          condition: << parameters.npm-repo >>
           steps:
             - run:
                 name:  Create npm read token
@@ -40,7 +42,7 @@ commands:
                     echo "Set packagecloud npm master token argument" 
                   fi  
       - when:
-          condition: << parameters.repotype >> == "maven-gradle"
+          condition: << parameters.maven-gradle-repo >>
           steps:
             - run:
                 name:  Create maven release and snapshot read tokens and set up gradle
@@ -57,8 +59,9 @@ commands:
                     cp ~/.gradle/gradle.properties .
                   else
                     echo "Set packagecloud API token argument"
+                  fi  
       - when:
-          condition: << parameters.repotype >> == "pypi"
+          condition: << parameters.pypi-name >>
           steps:
             - run:
                 name: Create pypi read token
@@ -74,13 +77,16 @@ commands:
     description: |
       Revoke read token(s)
     parameters:
-      repotype:
-        description: The type of packagecloud repository to revoke read tokens for
-        type: enum
-        enum:
-          - npm
-          - maven-gradle
-          - pypi
+      parameters:
+      npm-repo:
+        type: boolean
+        default: false
+      maven-gradle-repo:
+        type: boolean
+        default: false
+      pypi-repo:
+        type: boolean
+        default: false
       username:
         type: string
       reponame: 
@@ -95,7 +101,7 @@ commands:
         type: string
     steps:
       - when:
-          condition: << parameters.repotype >> == "npm"
+          condition: << parameters.npm-repo >>
           steps:
             - run:
                 name: revokenpm read token
@@ -105,7 +111,7 @@ commands:
                   export PACKAGECLOUD_TOKEN=<< parameters.packagecloudtoken >>
                   package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
       - when:
-          condition: << parameters.repotype >> == "maven-gradle"
+          condition: << parameters.maven-gradle-repo >>
           steps:
             - run:
                 name: revoke maven-gradle read tokens
@@ -118,7 +124,7 @@ commands:
                     curl -s -f -X DELETE https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/${REPO}/master_tokens/${TOKEN}/read_tokens/${ID}
                   done < ~/revoke.list
       - when:
-          condition: << parameters.repotype >> == "pypi"
+          condition: << parameters.pypi-name >>
           steps:
             - run:
                 name: revoke pypi read token
