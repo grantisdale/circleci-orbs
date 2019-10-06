@@ -9,9 +9,9 @@ jobs:
       - run:
           name: Install circleci cli && validate orb
           command: |
-            sudo apt-get update && sudo apt-get install curl
+            apt-get update && apt-get install curl
             curl -fLSs https://circle.ci/cli | bash
-            
+
             circleci orb validate packagecloud-tokens.yml
             
             if [ $? -eq 0 ]
