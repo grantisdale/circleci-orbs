@@ -64,8 +64,13 @@ The `packagecloud/create` is designed to be used with gradle. The command will c
 This command can be run more than once if you have more than one maven repository e.g. a releases and a snapshot repository. In your repositories `build.gradle` you can specify the packagecloud maven repoistory to be used like so:
 
 ```
-maven { url "https://packagecloud.io/priv/<read_token>/<username>/<repo1-name>/maven2" }
-maven { url "https://packagecloud.io/priv/<read_token>/<username>/<repo2-name>/maven2" }
+maven { url "https://packagecloud.io/priv/<repo1-name>.readtoken<username>/<repo1-name>/maven2" }
+maven { url "https://packagecloud.io/priv/<repo2-name>.readtoken/<username>/<repo2-name>/maven2" }
+```
+E.g.
+```
+maven { url "https://packagecloud.io/priv/releases.readtoken/grant/releases/maven2" }
+maven { url "https://packagecloud.io/priv/snapshots.readtoken/grant/snapshots/maven2" }
 ```
 
 #### Example .yml
