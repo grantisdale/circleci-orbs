@@ -29,8 +29,8 @@ version: 2.1
                 npm-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-npm-reponame
-                mastertoken: "$MY-NPM-MASTER_TOKEN"
-                packagecloudtoken: "$MY-PACKAGECLOUD_API_TOKEN"
+                mastertoken: "$MY_NPM_MASTER_TOKEN"
+                packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
 
             - run:
                 name: Install and test
