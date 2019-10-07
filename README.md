@@ -115,7 +115,7 @@ On the command line:
  pip install -U -r requirements.txt --extra-index-url=https://${READ_TOKEN}:@packagecloud.io/<username>/<repo-name>/pypi/simple
  ```
 
-In `requirements.txt`:`
+In `requirements.txt`:
 
 ```
 --index-url https://${READ_TOKEN}:@packagecloud.io/<username>/<repo-name>/pypi/simple
