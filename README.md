@@ -61,7 +61,7 @@ The `packagecloud/create` is designed to be used with gradle. The command will c
 
 `<repo-name>.readtoken` = packagecloud read token for the repository
 
-This command can be run more than once if you have more than one maven repository e.g. a releases and a snapshot repository. In your repositories `build.gradle` you can specify the the packagecloud maven repoistory to be used like so:
+This command can be run more than once if you have more than one maven repository e.g. a releases and a snapshot repository. In your repositories `build.gradle` you can specify the packagecloud maven repoistory to be used like so:
 
 ```
 maven { url "https://packagecloud.io/priv/<read_token>/<username>/<repo1-name>/maven2" }
