@@ -59,18 +59,21 @@ The `packagecloud/create` is designed to be used with gradle. The command will c
 
 `mavenPassword` = packagecloud API token
 
-`<repo-name>.readtoken` = packagecloud read token for the repository
+`<reponame>token` = packagecloud read token for the repository
 
 This command can be run more than once if you have more than one maven repository e.g. a releases and a snapshot repository. In your repositories `build.gradle` you can specify the packagecloud maven repoistory to be used like so:
 
 ```
-maven { url "https://packagecloud.io/priv/<repo1-name>.readtoken<username>/<repo1-name>/maven2" }
-maven { url "https://packagecloud.io/priv/<repo2-name>.readtoken/<username>/<repo2-name>/maven2" }
+# * Note: the "reponametoken" paramater below will need your repo name WITHOUT a "-" (hypen) if it has one *
+# * E.g. for a packagecloud repository named "my-releases", "myreleasestoken" should be the reponametoken parameter in the URL below *
+
+maven { url "https://packagecloud.io/priv/<repo1name>token/<username>/<repo1-name>/maven2" }
+maven { url "https://packagecloud.io/priv/<repo2name>token/<username>/<repo2-name>/maven2" }
 ```
 E.g.
 ```
-maven { url "https://packagecloud.io/priv/releases.readtoken/grant/releases/maven2" }
-maven { url "https://packagecloud.io/priv/snapshots.readtoken/grant/snapshots/maven2" }
+maven { url "https://packagecloud.io/priv/myreleasestoken/grant/my-releases/maven2" }
+maven { url "https://packagecloud.io/priv/mysnapshotstoken/grant/my-snapshots/maven2" }
 ```
 
 #### Example .yml
