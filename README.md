@@ -24,17 +24,20 @@ version: 2.1
           - image: circleci/node:10.16.3
           steps:
             - checkout
+
             - packagecloud/create:
                 npm-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-npm-reponame
                 mastertoken: "$MY-NPM-MASTER_TOKEN"
                 packagecloudtoken: "$MY-PACKAGECLOUD_API_TOKEN"
+
             - run:
                 name: Install and test
                 command: |
                   yarn install
                   yarn test
+
             - run:
                 name: Install packagecloud cli
                 command: |
@@ -42,6 +45,7 @@ version: 2.1
                   $SUDO apt-get install ruby-full
                   $SUDO gem install rake
                   $SUDO gem install package_cloud
+                  
             - packagecloud/revoke:
                 npm-repo: true
                 username: packagecloud-username
@@ -82,16 +86,19 @@ version: 2.1
                 reponame: packgecloud-maven-releases-reponame
                 mastertoken: "$MY_MAVEN_RELEASES_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+
             - packagecloud/create:
                 maven-gradle-repo: true
                 username: packagecloud-username
                 reponame: packgecloud-maven-snapshots-reponame
                 mastertoken: "$MY_MAVEN_SNAPSHOTS_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+
             - run:
                 name: Build
                 command: |
                   ./gradlew
+
             - packagecloud/revoke:
                 maven-gradle-repo: true
                 username: packagecloud-username
@@ -131,20 +138,24 @@ version: 2.1
             image: ubuntu-1604:201903-01
           steps:
             - checkout
+
             - packagecloud/create:
                 pypi-repo: true
                 username: packagecloud-username
                 reponame: packagecloud-pypi-reponame
                 mastertoken: "$MY_PYPI_REPO_MASTER_TOKEN"
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
+
             - run:
                 name: Install dependencies
                 command: |
                   pip3 install -U -r requirements.txt --extra-index-url=https://${READ_TOKEN}:@packagecloud.io/packagecloud-username/packagecloud-pypi-reponame/pypi/simple
+
             - run:
                 name: Install packagecloud cli
                 command: |
                   gem install package_cloud
+
             - packagecloud/revoke:
                 pypi-repo: true
                 username: packagecloud-username
