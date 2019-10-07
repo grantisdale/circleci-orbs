@@ -1,19 +1,19 @@
 # CircleCI Orbs
 
-### Set up packagecloud repositories to be used in CircleCI jobs
+## Set up packagecloud repositories to be used in CircleCI jobs
 * `grantisdale/packagecloud` 
     : https://circleci.com/orbs/registry/orb/grantisdale/packagecloud
 
 
-### Usage
+## Usage
 
-#### Npm repositories
+### Npm repositories
 
 The `packagecloud/create` command will create a `.npmrc` in the home directory `(/home/circleci)` of the image/machine. In the `.npmrc` it will set the `registry` as your desired packagecloud URL and set the auth token for that URL as your newly created Read Token.
 
 This will allow you to run `npm install` and `yarn install` and install packages from your packagecloud npm repository.
 
-##### Example .yml
+#### Example .yml
 ```
 version: 2.1
       orbs:
@@ -53,7 +53,7 @@ version: 2.1
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
 ```
 
-#### Maven repositories
+### Maven repositories
 
 The `packagecloud/create` is designed to be used with gradle. The command will create and set up a ` ~/.gradle/gradle.properties` file with the following lines:
 
@@ -68,7 +68,7 @@ maven { url "https://packagecloud.io/priv/<read_token>/<username>/<repo1-name>/m
 maven { url "https://packagecloud.io/priv/<read_token>/<username>/<repo2-name>/maven2" }
 ```
 
-##### Example .yml
+#### Example .yml
 
 ```
 version: 2.1
@@ -80,7 +80,7 @@ version: 2.1
             image: ubuntu-1604:201903-01
           steps:
             - checkout
-            
+
             - packagecloud/create:
                 maven-gradle-repo: true
                 username: packagecloud-username
@@ -106,7 +106,7 @@ version: 2.1
                 packagecloudtoken: "$MY_PACKAGECLOUD_API_TOKEN"
 ```
 
-#### Pypi repositories
+### Pypi repositories
 
 The `packagecloud/create` command will create an environment variable `READ_TOKEN`. This can be used as an `--index-url` or `--extra-index-url` in the command line or in your requirements.txt itself. Examples of both below:
 
@@ -127,7 +127,7 @@ Mopidy-Dirble ~= 1.1
 ```
 
 
-##### Example .yml
+#### Example .yml
 
 ```
 version: 2.1
