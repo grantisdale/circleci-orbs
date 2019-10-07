@@ -45,7 +45,7 @@ version: 2.1
                   $SUDO apt-get install ruby-full
                   $SUDO gem install rake
                   $SUDO gem install package_cloud
-                  
+
             - packagecloud/revoke:
                 npm-repo: true
                 username: packagecloud-username
@@ -80,6 +80,7 @@ version: 2.1
             image: ubuntu-1604:201903-01
           steps:
             - checkout
+            
             - packagecloud/create:
                 maven-gradle-repo: true
                 username: packagecloud-username
