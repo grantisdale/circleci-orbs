@@ -64,7 +64,7 @@ The `packagecloud/create` is designed to be used with gradle. The command will c
 This command can be run more than once if you have more than one maven repository e.g. a releases and a snapshot repository. In your repositories `build.gradle` you can specify the packagecloud maven repoistory to be used like so:
 
 ```
-# Note: the "reponametoken" paramater below will need your repo name WITHOUT a "-" (hypen) if it contains one
+# Note: the "reponametoken" parameter below will need your repo name WITHOUT a "-" (hypen) if it contains one
 # E.g. for a packagecloud repository named "my-releases", "myreleasestoken" should be the <reponame>token parameter in the URL below
 
 maven { url "https://packagecloud.io/priv/<repo1name>token/<username>/<repo1-name>/maven2" }
