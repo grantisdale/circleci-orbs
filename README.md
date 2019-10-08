@@ -13,7 +13,7 @@ The `packagecloud/create` command will create a `.npmrc` in the home directory `
 
 This will allow you to run `npm install` and `yarn install` and install packages from your packagecloud npm repository.
 
-#### Example .yml
+#### example.yml
 ```
 version: 2.1
       orbs:
@@ -64,8 +64,8 @@ The `packagecloud/create` is designed to be used with gradle. The command will c
 This command can be run more than once if you have more than one maven repository e.g. a releases and a snapshot repository. In your repositories `build.gradle` you can specify the packagecloud maven repoistory to be used like so:
 
 ```
-# * Note: the "reponametoken" paramater below will need your repo name WITHOUT a "-" (hypen) if it has one *
-# * E.g. for a packagecloud repository named "my-releases", "myreleasestoken" should be the reponametoken parameter in the URL below *
+# Note: the "reponametoken" paramater below will need your repo name WITHOUT a "-" (hypen) if it contains one
+# E.g. for a packagecloud repository named "my-releases", "myreleasestoken" should be the <reponame>token parameter in the URL below
 
 maven { url "https://packagecloud.io/priv/<repo1name>token/<username>/<repo1-name>/maven2" }
 maven { url "https://packagecloud.io/priv/<repo2name>token/<username>/<repo2-name>/maven2" }
@@ -76,7 +76,7 @@ maven { url "https://packagecloud.io/priv/myreleasestoken/grant/my-releases/mave
 maven { url "https://packagecloud.io/priv/mysnapshotstoken/grant/my-snapshots/maven2" }
 ```
 
-#### Example .yml
+#### example.yml
 
 ```
 version: 2.1
@@ -116,7 +116,7 @@ version: 2.1
 
 ### Pypi repositories
 
-The `packagecloud/create` command will create an environment variable `READ_TOKEN`. This can be used as an `--index-url` or `--extra-index-url` in the command line or in your requirements.txt itself. Examples of both below:
+The `packagecloud/create` command will create an environment variable `READ_TOKEN`. This can be used as an `--index-url` or `--extra-index-url` in the command line or in your `requirements.txt` itself. Examples of both below:
 
 On the command line:
  ```
@@ -135,7 +135,7 @@ Mopidy-Dirble ~= 1.1
 ```
 
 
-#### Example .yml
+#### example.yml
 
 ```
 version: 2.1
