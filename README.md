@@ -55,7 +55,7 @@ version: 2.1
 
 ### Maven repositories
 
-The `packagecloud/create` is designed to be used with gradle. The command will create and set up a ` ~/.gradle/gradle.properties` file with the following lines:
+The `packagecloud/create` is designed to be used with **gradle**. The command will create and set up a ` ~/.gradle/gradle.properties` file with the following lines:
 
 `mavenPassword` = packagecloud API token
 
