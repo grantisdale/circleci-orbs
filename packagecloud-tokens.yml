@@ -110,7 +110,9 @@ commands:
                     package_cloud read_token destroy << parameters.username >>/<< parameters.reponame >> default/`hostname -f`
                   else
                     echo "Set reponame parameter"
-                    exit 1  
+                    exit 1
+                  fi
+                when: always    
       - when:
           condition: << parameters.maven-gradle-repo >>
           steps:
@@ -124,6 +126,7 @@ commands:
                     ID=$3
                     curl -s -f -X DELETE https://<< parameters.packagecloudtoken >>:@packagecloud.io/api/v1/repos/<< parameters.username >>/${REPO}/master_tokens/${TOKEN}/read_tokens/${ID}
                   done < ~/revoke.list
+                when: always  
       - when:
           condition: << parameters.pypi-repo >>
           steps:
@@ -136,6 +139,8 @@ commands:
                   else
                     echo "Set reponame parameter"
                     exit 1
+                  fi
+                when: always    
 examples:
   packagecloud-npm-repository:
     description: |
