@@ -67,13 +67,13 @@ This command can be run more than once if you have more than one maven repositor
 # Note: the "reponametoken" parameter below will need your repo name WITHOUT a "-" (hypen) if it contains one
 # E.g. for a packagecloud repository named "my-releases", "myreleasestoken" should be the <reponame>token parameter in the URL below
 
-maven { url "https://packagecloud.io/priv/<repo1name>token/<username>/<repo1-name>/maven2" }
-maven { url "https://packagecloud.io/priv/<repo2name>token/<username>/<repo2-name>/maven2" }
+maven { url "https://packagecloud.io/priv/${<repo1name>token}/<username>/<repo1-name>/maven2" }
+maven { url "https://packagecloud.io/priv/${<repo2name>token}/<username>/<repo2-name>/maven2" }
 ```
 E.g.
 ```
-maven { url "https://packagecloud.io/priv/myreleasestoken/grant/my-releases/maven2" }
-maven { url "https://packagecloud.io/priv/mysnapshotstoken/grant/my-snapshots/maven2" }
+maven { url "https://packagecloud.io/priv/${myreleasestoken}/grant/my-releases/maven2" }
+maven { url "https://packagecloud.io/priv/${mysnapshotstoken}/grant/my-snapshots/maven2" }
 ```
 
 #### example.yml
