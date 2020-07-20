@@ -99,6 +99,22 @@ commands:
         description: Packagecloud API token
         type: string
     steps:
+      - run:
+          name: Install packagecloud CLI
+          command:
+            install () {
+            # Set sudo to work whether logged in as root user or non-root user
+            if [[ $(command -v gem == "" ]];
+              apt-get install ruby-full -y && \
+              gem install rake
+            fi
+            gem install package_cloud
+          }
+          if [[ $(command -v packagecloud) == "" ]]; then
+            install
+          else
+            echo "packagecloud CLI is already installed."
+          fi
       - when:
           condition: << parameters.npm-repo >>
           steps:
