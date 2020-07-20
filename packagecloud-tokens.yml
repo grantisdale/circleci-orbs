@@ -112,7 +112,7 @@ commands:
             fi
             $SUDO gem install package_cloud
           }
-          if [[ $(command -v packagecloud) == "" ]]; then
+          if [[ $(command -v package_cloud) == "" ]]; then
             install
           else
             echo "packagecloud CLI is already installed."
