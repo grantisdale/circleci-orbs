@@ -101,22 +101,22 @@ commands:
     steps:
       - run:
           name: Install packagecloud CLI
-          command:
+          command: |
             install () {
             # Set sudo to work whether logged in as root user or non-root user
             if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
-            if [[ $(command -v gem) == "" ]];
+            if [[ $(command -v gem) == "" ]]; then
               $SUDO apt-get update && \
               $SUDO apt-get install ruby-full -y && \
               $SUDO gem install rake || true
             fi
             $SUDO gem install package_cloud
-          }
-          if [[ $(command -v package_cloud) == "" ]]; then
-            install
-          else
-            echo "packagecloud CLI is already installed."
-          fi
+            }
+            if [[ $(command -v package_cloud) == "" ]]; then
+              install
+            else
+              echo "packagecloud CLI is already installed."
+            fi
       - when:
           condition: << parameters.npm-repo >>
           steps:
