@@ -104,11 +104,13 @@ commands:
           command:
             install () {
             # Set sudo to work whether logged in as root user or non-root user
-            if [[ $(command -v gem == "" ]];
-              apt-get install ruby-full -y && \
-              gem install rake
+            if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+            if [[ $(command -v gem) == "" ]];
+              $SUDO apt-get update && \
+              $SUDO apt-get install ruby-full -y && \
+              $SUDO gem install rake || true
             fi
-            gem install package_cloud
+            $SUDO gem install package_cloud
           }
           if [[ $(command -v packagecloud) == "" ]]; then
             install
