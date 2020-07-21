@@ -117,6 +117,7 @@ commands:
             else
               echo "packagecloud CLI is already installed."
             fi
+          when: always
       - when:
           condition: << parameters.npm-repo >>
           steps:
