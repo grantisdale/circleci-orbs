@@ -110,8 +110,15 @@ commands:
               $SUDO apt-get install ruby-full -y && \
               $SUDO gem install rake || true
             fi
-            $SUDO gem install package_cloud
+            # On new gen CircleCI images gem is installed but not availible to sudo
+            # If that is that case then check here before running install of package_cloud command
+            if [[ $(sudo bash -c 'command -v gem') == "" ]]; then
+              gem install package_cloud
+            else
+              $SUDO gem install package_cloud
+            fi
             }
+
             if [[ $(command -v package_cloud) == "" ]]; then
               install
             else
